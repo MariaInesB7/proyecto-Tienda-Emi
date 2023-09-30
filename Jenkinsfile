@@ -17,7 +17,7 @@
             steps{                      
                 dir('./'){
                     script {
-                        sh 'docker build -t marinesb7/lab-jenkins-diplo:1.0 .'
+                        sh 'docker --help'
                     }        
                     echo 'Build completado'
                 }
