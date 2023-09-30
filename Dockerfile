@@ -54,7 +54,6 @@ RUN a2enmod rewrite
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer install || true
 RUN composer update || true
-RUN php artisan key:generate
 RUN chmod -R 777 /var/www/html/storage 
 RUN sed -i -e 's/html/html\/public/g' /etc/apache2/sites-available/000-default.conf
 EXPOSE 80
