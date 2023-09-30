@@ -17,7 +17,7 @@
             steps{                      
                 dir('./'){
                     script {
-                        sh 'docker --help'
+                        sh 'docker build -t marinesb7/lab-jenkins-diplo:1.0 .'
                     }        
                     echo 'Build completado'
                 }
@@ -30,7 +30,8 @@
         }
         stage('Login Docker Hub') {          
           steps{
-        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+              echo ' $DOCKERHUB_CREDENTIALS'
+        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS --password-stdin'
         	  echo 'Login Completado'
             }
         }
