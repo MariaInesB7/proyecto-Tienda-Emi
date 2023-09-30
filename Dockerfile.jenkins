@@ -29,10 +29,11 @@ RUN apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugi
 
 RUN usermod -aG docker jenkins && newgrp docker
 RUN chown -R jenkins:jenkins $JENKINS_HOME/
-RUN docker -h
+RUN chown -R root:docker run/
+#RUN cp /run/docker.sock /var/run/
 
 # Switch back to the jenkins user
 USER jenkins
-VOLUME [$JENKINS_HOME, "/var/run/docker.sock"]
+#VOLUME ["/var/run/docker.sock"]
 # Start Jenkins
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
