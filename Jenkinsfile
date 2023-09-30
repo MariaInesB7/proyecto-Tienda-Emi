@@ -15,7 +15,7 @@
         }
         stage('Compilar el proyecto') {            
             steps{                      
-                dir('webhotelhub'){
+                dir('./'){
                     script {
                         dockerImage = docker.build registry + ":$BUILD_NUMBER"
                     }        
