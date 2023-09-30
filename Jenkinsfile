@@ -1,38 +1,41 @@
  pipeline {   
     agent any
     environment {
-        DOCKERHUB_CREDENTIALS= credentials('docker-us-pass')
-        registry = "renatoapaza/webhotelhub-front"
+        DOCKERHUB_CREDENTIALS= credentials('DOCKERHUB_CREDENTIALS')
+        registry = "marinesb7/lab-jenkins-diplo"
         registryCredential = 'docker-us-pass'
         dockerImage = ''
     }
     stages {
-       stage("Git Checkout"){
+       stage("Clonar el repositorio"){
            steps{
-               //git credentialsId: 'gitlabusuario', url: 'https://gitlab.com/uagrm1/mod5/webhotelhub.git'	           
-	           echo 'Git Checkout Completed'            
+               git  'https://github.com/MariaInesB7/proyecto-Tienda-Emi'	           
+	           echo 'Repositorio clonado'            
             }
         }
-        stage('Build Docker Image') {            
+        stage('Compilar el proyecto') {            
             steps{                      
                 dir('webhotelhub'){
                     script {
                         dockerImage = docker.build registry + ":$BUILD_NUMBER"
-                    }
-	                //sh 'docker build -t renatoapaza/webhotelhub:$BUILD_NUMBER .'           
-                    echo 'Build Image Completed'
+                    }        
+                    echo 'Build completado'
                 }
             }
         }
-        stage('Login to Docker Hub') {          
+        stage('Pruebas unitarias') {          
           steps{
-        	  //sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-        	  echo 'Login Completed'
+        	  echo 'Ejecución de Pruebas Completada'
+            }
+        }
+        stage('Login Docker Hub') {          
+          steps{
+        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        	  echo 'Login Completado'
             }
         }
         
-        // Instalar el plugin: Docker Pipeline
-        stage('Push Image to Docker Hub') {                     
+        stage('Push Imagen a Docker Hub') {                     
             steps{
                 script {
                         docker.withRegistry( '', registryCredential ) {
@@ -49,15 +52,10 @@
             }
         }
 
-        stage('Deploying Container to Kubernetes') {
+        stage('Desplegar') {
             steps {
-                dir('webhotelhub'){
-                    withCredentials(bindings: [string(credentialsId: 'kubernete-jenkis-server-account', variable: 'api_token')]) {
-                        sh 'kubectl --token $api_token --server https://192.168.49.2:8443 --insecure-skip-tls-verify=true delete -f deployment-app-front-jenkins.yaml '
-                        sh 'kubectl --token $api_token --server https://192.168.49.2:8443 --insecure-skip-tls-verify=true apply -f deployment-app-front-jenkins.yaml '
-                    }
 
-                    echo 'Deploying Container to Kubernetes'
+                    echo 'Proyecto desplegado'
                 }
             }
         }     
