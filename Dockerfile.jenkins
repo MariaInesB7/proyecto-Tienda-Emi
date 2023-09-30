@@ -23,34 +23,16 @@ RUN echo \
     tee /etc/apt/sources.list.d/docker.list > /dev/null
 RUN apt-get update
 
-
-# Add Docker's official GPG key
-# RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-# Add Docker repository
-# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" \
-#     > /etc/apt/sources.list.d/docker.list
-# RUN apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
 # Install Docker
 RUN apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-# RUN apt-get update && \
-#     apt-get install -y docker-ce docker-ce-cli containerd.io
+
 
 RUN usermod -aG docker jenkins && newgrp docker
-VOLUME ["/var/run/docker.sock"]
-#RUN chown -R root:docker /var/run/docker.sock
-#RUN systemctl enable docker.service && systemctl enable containerd.service
-# Download and install Sonar Scanner
-RUN wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip -O /tmp/sonar-scanner.zip && \
-    unzip /tmp/sonar-scanner.zip -d /var/jenkins_home/ && \
-    rm /tmp/sonar-scanner.zip
-
-# Set the PATH to include Sonar Scanner
-ENV PATH="/var/jenkins_home/sonar-scanner-4.7.0.2747-linux/bin:${PATH}"
+RUN chown -R jenkins:jenkins $JENKINS_HOME/
+RUN docker -h
 
 # Switch back to the jenkins user
 USER jenkins
-
+VOLUME [$JENKINS_HOME, "/var/run/docker.sock"]
 # Start Jenkins
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/jenkins.sh"]

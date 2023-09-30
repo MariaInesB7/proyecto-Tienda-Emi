@@ -17,7 +17,7 @@
             steps{                      
                 dir('./'){
                     script {
-                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                        sh 'docker build -t marinesb7/lab-jenkins-diplo:1.0 .'
                     }        
                     echo 'Build completado'
                 }
