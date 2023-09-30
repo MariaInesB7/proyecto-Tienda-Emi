@@ -58,7 +58,7 @@
                     echo 'Proyecto desplegado'
                 }
             }
-        }     
+    
     } //stages 
     post{
         always {  
