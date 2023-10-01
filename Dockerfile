@@ -48,7 +48,7 @@ RUN echo "<Directory /var/www/html/>\n\
 
 WORKDIR /var/www/html
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install --no-interaction --optimize-autoloader
+RUN composer install --no-interaction --optimize-autoloader || composer update --no-interaction --optimize-autoloader
 
 RUN php artisan key:generate
 RUN php artisan optimize
