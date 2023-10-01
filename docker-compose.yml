@@ -4,8 +4,8 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: tire-app_:1.0
-    container_name: c1-app
+    image: tienda_emi:latest
+    container_name: tienda_emi
     ports:
       - "8080:80"
     volumes:
@@ -18,11 +18,11 @@ services:
 
   db_tire:
     image: postgres:15.4
-    container_name: db_tire
+    container_name: db_emi
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: tienda_tirestone
+      POSTGRES_DB: tienda_emi
       POSTGRES_USER: root
       POSTGRES_PASSWORD: toor
     

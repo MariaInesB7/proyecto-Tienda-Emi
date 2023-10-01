@@ -27,22 +27,6 @@ mkdir -p /etc/apt/keyrings && \
 curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 RUN apt-get update && apt-get install nodejs -y
-# RUN echo "\e[1;33mInstall important docker dependencies\e[0m"
-# RUN docker-php-ext-install \
-#     exif \
-#     pcntl \
-#     bcmath \
-#     ctype \
-#     curl \
-#     iconv \
-#     xml \
-#     soap \
-#     pcntl \
-#     mbstring \
-#     tokenizer \
-#     bz2 \
-#     zip \
-#     intl
 
 # Install Postgre PDO
 RUN apt-get install -y libpq-dev \
@@ -50,11 +34,26 @@ RUN apt-get install -y libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
 
-RUN a2enmod rewrite
+COPY . /var/www/html
+
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+RUN echo "<Directory /var/www/html/>\n\
+  Options Indexes FollowSymLinks\n\
+  AllowOverride all\n\
+  Require all granted\n\
+</Directory>" >> /etc/apache2/apache2.conf
+
+
+WORKDIR /var/www/html
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN composer install || true
-RUN composer update || true
-RUN chmod -R 777 /var/www/html/storage 
-RUN sed -i -e 's/html/html\/public/g' /etc/apache2/sites-available/000-default.conf
+RUN composer install --no-interaction --optimize-autoloader
+
+RUN php artisan key:generate
+RUN php artisan optimize
+RUN php artisan route:clear
+RUN php artisan config:cache
+
 EXPOSE 80
 CMD ["apache2-foreground"]
