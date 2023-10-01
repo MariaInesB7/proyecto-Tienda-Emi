@@ -3,7 +3,7 @@
     environment {
         DOCKERHUB_CREDENTIALS= credentials('DOCKERHUB_CREDENTIALS')
         registry = "marinesb7/lab-jenkins-diplo"
-        registryCredential = 'docker-us-pass'
+        registryCredential = 'DOCKERHUB_CREDENTIALS'
         dockerImage = ''
     }
     stages {
@@ -17,7 +17,7 @@
             steps{                      
                 dir('./'){
                     script {
-                        sh 'docker build -t marinesb7/lab-jenkins-diplo:1.0 .'
+                        dockerImage = docker.build registry + ":$BUILD_NUMBER"
                     }        
                     echo 'Build completado'
                 }
@@ -30,8 +30,7 @@
         }
         stage('Login Docker Hub') {          
           steps{
-              echo ' $DOCKERHUB_CREDENTIALS'
-        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW'
+        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
         	  echo 'Login Completado'
             }
         }
@@ -60,7 +59,7 @@
                 }
             }
     
-    } //stages 
+    } 
     post{
         always {  
           sh 'docker logout'           
