@@ -30,7 +30,7 @@
         }
         stage('Login Docker Hub') {          
           steps{
-        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+        	  sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW'
         	  echo 'Login Completado'
             }
         }
